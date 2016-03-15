@@ -60,7 +60,6 @@ showLibrary = addon.getSetting("showLibrary") == "true"
 showAvailability = addon.getSetting("showAvailability") == "true"
 showPaidVideos = addon.getSetting("showPaidVideos") == "true"
 showKids = addon.getSetting("showKids") == "true"
-forceView = addon.getSetting("forceView") == "true"
 updateDB = addon.getSetting("updateDB") == "true"
 useTMDb = addon.getSetting("useTMDb") == "true"
 usePrimeProxy = False #addon.getSetting("usePrimeProxy") == "true"
@@ -253,9 +252,6 @@ def listOriginals():
             thumb = thumbs[titleT]
         addShowDir(title, videoID, "listSeasons", thumb, "tv", showAll=True)
     xbmcplugin.endOfDirectory(pluginhandle)
-    xbmc.sleep(100)
-    if forceView:
-        xbmc.executebuiltin('Container.SetViewMode(500)')
 
 def listWatchList(url):
     content = getUnicodePage(url)
@@ -365,12 +361,6 @@ def listWatchList(url):
         dlParams = json.dumps(dlParams)
         xbmc.executebuiltin('XBMC.RunScript('+downloadScriptTV+', '+urllib.quote_plus(dlParams.encode("utf8"))+')')
     xbmcplugin.endOfDirectory(pluginhandle)
-    xbmc.sleep(100)
-    if forceView:
-        if videoType == "movie":
-            xbmc.executebuiltin('Container.SetViewMode('+viewIdMovies+')')
-        else:
-            xbmc.executebuiltin('Container.SetViewMode('+viewIdShows+')')
 
 
 def listMovies(url):
@@ -433,9 +423,6 @@ def listMovies(url):
     if match:
         addDir(translation(30001), urlMain+match[0].replace("&amp;","&"), "listMovies", "DefaultTVShows.png")
     xbmcplugin.endOfDirectory(pluginhandle)
-    xbmc.sleep(100)
-    if forceView:
-        xbmc.executebuiltin('Container.SetViewMode('+viewIdMovies+')')
 
 
 def listShows(url):
@@ -500,9 +487,6 @@ def listShows(url):
     if match:
         addDir(translation(30001), urlMain+match[0].replace("&amp;","&"), "listShows", "DefaultTVShows.png")
     xbmcplugin.endOfDirectory(pluginhandle)
-    xbmc.sleep(100)
-    if forceView:
-        xbmc.executebuiltin('Container.SetViewMode('+viewIdShows+')')
 
 
 def listSimilarMovies(videoID):
@@ -539,9 +523,6 @@ def listSimilarMovies(videoID):
         dlParams = json.dumps(dlParams)
         xbmc.executebuiltin('XBMC.RunScript('+downloadScript+', '+urllib.quote_plus(dlParams.encode("utf8"))+')')
     xbmcplugin.endOfDirectory(pluginhandle)
-    xbmc.sleep(100)
-    if forceView:
-        xbmc.executebuiltin('Container.SetViewMode('+viewIdMovies+')')
 
 
 def listSimilarShows(videoID):
@@ -584,9 +565,6 @@ def listSimilarShows(videoID):
         dlParams = json.dumps(dlParams)
         xbmc.executebuiltin('XBMC.RunScript('+downloadScriptTV+', '+urllib.quote_plus(dlParams.encode("utf8"))+')')
     xbmcplugin.endOfDirectory(pluginhandle)
-    xbmc.sleep(100)
-    if forceView:
-        xbmc.executebuiltin('Container.SetViewMode('+viewIdShows+')')
 
 
 def listSeasons(seriesName, seriesID, thumb, showAll = False):
@@ -689,9 +667,6 @@ def listEpisodes(seriesID, seasonID, thumb, content="", seriesName=""):
                     playcount = 1
             addEpisodeLink(title, episodeID, 'playVideo', thumb, desc, length, seasonNr, episodeNr, seriesID, playcount, aired, seriesName)
     xbmcplugin.endOfDirectory(pluginhandle)
-    xbmc.sleep(100)
-    if forceView:
-        xbmc.executebuiltin('Container.SetViewMode('+viewIdEpisodes+')')
 
 
 def listGenres(url, videoType):

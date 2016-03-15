@@ -12,14 +12,6 @@
         <setting id="showKids" type="bool" label="30106" default="true"/>
         <setting id="showOriginals" type="bool" label="30121" default="true"/>
     </category>
-    <category label="30202">
-        <setting id="forceView" type="bool" label="30108" default="true"/>
-        <setting id="viewIdMovies" type="number" label="30109" enable="eq(-1,true)" default="501"/>
-        <setting id="viewIdShows" type="number" label="30110" enable="eq(-2,true)" default="501"/>
-        <setting id="viewIdSeasons" type="number" label="30111" enable="eq(-3,true)" default="50"/>
-        <setting id="viewIdEpisodes" type="number" label="30112" enable="eq(-4,true)" default="503"/>
-        <setting id="viewIdDetails" type="number" label="30123" enable="eq(-5,true)" default="508"/>
-    </category>
     <category label="30203">
         <setting id="useTMDb" type="bool" label="30113" default="true"/>
         <setting id="preferAmazonTrailer" type="bool" label="30120" default="false"/>
