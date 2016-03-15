@@ -59,11 +59,6 @@
   <string id="30105">Show "My Library"</string>
   <string id="30106">Show "Popular for Kids"</string>
   <string id="30107">Watchlist order</string>
-  <string id="30108">Force View</string>
-  <string id="30109">ViewID (Movies)</string>
-  <string id="30110">ViewID (Shows)</string>
-  <string id="30111">ViewID (Season)</string>
-  <string id="30112">ViewID (Episodes)</string>
   <string id="30113">Get covers &amp; fanart images from TMDb</string>
   <string id="30114">Update library after adding media</string>
   <string id="30115">Delete cookies</string>
@@ -74,7 +69,6 @@
   <string id="30120">Prefer Amazon Trailers (UK/DE only)</string>
   <string id="30121">Show "Pilot Season 2015"</string>
   <string id="30122">Show notification after changing the Watchlist</string>
-  <string id="30123">ViewID (Details)</string>
   <string id="30125">Language</string>
   <string id="30126">Pool seasons in Watchlist</string>
   <string id="30127">Watchlist tv show order</string>

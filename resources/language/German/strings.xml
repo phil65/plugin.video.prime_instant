@@ -60,10 +60,6 @@
   <string id="30106">"Beliebt für Kinder" anzeigen</string>
   <string id="30107">Watchlist Sortierung</string>
   <string id="30108">View erzwingen</string>
-  <string id="30109">ViewID (Filme)</string>
-  <string id="30110">ViewID (Serien)</string>
-  <string id="30111">ViewID (Staffeln)</string>
-  <string id="30112">ViewID (Episoden)</string>
   <string id="30113">Cover &amp; Fanart über TMDb beziehen</string>
   <string id="30114">Datenbank nach dem Hinzufügen aktualisieren</string>
   <string id="30115">Cookies löschen</string>
@@ -74,7 +70,6 @@
   <string id="30120">Amazon Trailer bevorzugen (nur UK/DE)</string>
   <string id="30121">"Pilot Season 2015" anzeigen</string>
   <string id="30122">Info-Fenster nach dem Ändern der Watchlist anzeigen</string>
-  <string id="30123">ViewID (Details)</string>
   <string id="30125">Sprache</string>
   <string id="30126">Serienstaffeln in Watchlist zusammenfassen</string>
   <string id="30127">Watchlist Seriensortierung</string>
