@@ -368,7 +368,8 @@ def listMovies(url):
 
     dlParams = []
     videoimage = ScrapeUtils.VideoImage()
-    for entry in content.split('id="result_'):
+    for entry in content.split('id="result_')[1:]:
+        prettyprint(entry)
         match = re.compile('asin="(.+?)"', re.DOTALL).findall(entry)
         # if match and '>Amazon Video:' in entry:
         if True:
@@ -415,10 +416,9 @@ def listShows(url):
     match = re.compile('"csrfToken":"(.+?)"', re.DOTALL).findall(content)
     if match:
         addon.setSetting('csrfToken', match[0])
-    spl = content.split('id="result_')
     showEntries = []
     dlParams = []
-    for entry in spl:
+    for entry in content.split('id="result_')[1:]:
         match = re.compile('asin="(.+?)"', re.DOTALL).findall(entry)
         isPaidVideo = False
         if showPaidVideos:
@@ -473,9 +473,8 @@ def listSimilarMovies(videoID):
     match = re.compile('csrf":"(.+?)"', re.DOTALL).findall(content)
     if match:
         addon.setSetting('csrfToken', match[0])
-    spl = content.split('<li class="packshot')
     dlParams = []
-    for entry in spl:
+    for entry in content.split('<li class="packshot')[1:]:
         entry = entry[:entry.find('</li>')]
         if 'packshot-sash-prime' in entry:
             match = re.compile("data-type='downloadable_(.+?)'", re.DOTALL).findall(entry)
@@ -499,6 +498,11 @@ def listSimilarMovies(videoID):
         xbmc.executebuiltin('XBMC.RunScript(' + downloadScript + ', ' + urllib.quote_plus(dlParams.encode("utf8")) + ')')
     xbmcplugin.endOfDirectory(pluginhandle)
 
+def prettyprint(string):
+    log(json.dumps(string,
+                   sort_keys=True,
+                   indent=4,
+                   separators=(',', ': ')))
 
 def listSimilarShows(videoID):
     xbmcplugin.setContent(pluginhandle, "tvshows")
@@ -508,7 +512,7 @@ def listSimilarShows(videoID):
         addon.setSetting('csrfToken', match[0])
     showEntries = []
     dlParams = []
-    for entry in content.split('<li class="packshot'):
+    for entry in content.split('<li class="packshot')[1:]:
         entry = entry[:entry.find('</li>')]
         if 'packshot-sash-prime' in entry:
             match = re.compile("data-type='downloadable_(.+?)'", re.DOTALL).findall(entry)
@@ -1110,7 +1114,16 @@ def addLinkR(name, url, mode, iconimage, videoType="", desc="", duration="", yea
     liz = xbmcgui.ListItem(name,
                            iconImage="DefaultTVShows.png",
                            thumbnailImage=iconimage)
-    liz.setInfo(type="video", infoLabels={"mediatype": videoType, "title": name, "plot": desc, "duration": duration, "year": year, "mpaa": mpaa, "director": director, "genre": genre, "rating": rating})
+    infos = {"mediatype": videoType,
+             "title": name,
+             "plot": desc,
+             "duration": duration,
+             "year": year,
+             "mpaa": mpaa,
+             "director": director,
+             "genre": genre,
+             "rating": rating}
+    liz.setInfo(type="video", infoLabels=infos)
     liz.setArt({"fanart": fanartFile, "poster": iconimage})
     entries = []
     entries.append((translation(30054), 'RunPlugin(plugin://' + addonID + '/?mode=playVideo&url=' + urllib.quote_plus(url.encode("utf8")) + '&selectQuality=true)',))
