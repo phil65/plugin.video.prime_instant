@@ -30,8 +30,8 @@ addonUserDataFolder = xbmc.translatePath("special://profile/addon_data/" + addon
 icon = os.path.join(addonFolder, "icon.png")  # .encode('utf-8')
 
 
-def translation(id):
-    return addon.getLocalizedString(id)  # .encode('utf-8')
+def translation(string_id):
+    return addon.getLocalizedString(string_id)  # .encode('utf-8')
 
 if not os.path.exists(os.path.join(addonUserDataFolder, "settings.xml")):
     xbmc.executebuiltin(unicode('XBMC.Notification(Info:,' + translation(30081) + ',10000,' + icon + ')').encode("utf-8"))
@@ -48,7 +48,6 @@ defaultFanart = os.path.join(addonFolderResources, "fanart.png")
 libraryFolder = os.path.join(addonUserDataFolder, "library")
 libraryFolderMovies = os.path.join(libraryFolder, "Movies")
 libraryFolderTV = os.path.join(libraryFolder, "TV")
-debugFile = os.path.join(addonUserDataFolder, "debug")
 preferAmazonTrailer = addon.getSetting("preferAmazonTrailer") == "true"
 showNotification = addon.getSetting("showNotification") == "true"
 showOriginals = addon.getSetting("showOriginals") == "true"
@@ -386,7 +385,10 @@ def listMovies(url):
                 year = match1[0].strip()
             if match2:
                 year = match2[0].strip()
-            dlParams.append({'type': 'movie', 'id': videoID, 'title': cleanTitleTMDB(cleanSeasonTitle(title)), 'year': year})
+            dlParams.append({'type': 'movie',
+                            'id': videoID,
+                            'title': cleanTitleTMDB(cleanSeasonTitle(title)),
+                            'year': year})
             match = re.compile('src="(.+?)"', re.DOTALL).findall(entry)
             thumbUrl = videoimage.ImageFile(match[0])
             match = re.compile('data-action="s-watchlist-add".+?class="a-button a-button-small(.+?)"', re.DOTALL).findall(entry)
@@ -446,7 +448,10 @@ def listShows(url):
                 year = match1[0].strip()
             if match2:
                 year = match2[0].strip()
-            dlParams.append({'type': 'tv', 'id': videoID, 'title': cleanTitleTMDB(cleanSeasonTitle(title)), 'year': year})
+            dlParams.append({'type': 'tv',
+                             'id': videoID,
+                              'title': cleanTitleTMDB(cleanSeasonTitle(title)),
+                              'year': year})
             match = re.compile('src="(.+?)"', re.DOTALL).findall(entry)
             thumbUrl = match[0].replace(".jpg", "")
             thumbUrl = thumbUrl[:thumbUrl.rfind(".")] + ".jpg"
@@ -482,7 +487,10 @@ def listSimilarMovies(videoID):
                 match = re.compile('alt="(.+?)"', re.DOTALL).findall(entry)
                 title = match[0]
                 title = cleanTitle(title)
-                dlParams.append({'type': 'movie', 'id': videoID, 'title': cleanTitleTMDB(cleanSeasonTitle(title)), 'year': ''})
+                dlParams.append({'type': 'movie',
+                                 'id': videoID,
+                                 'title': cleanTitleTMDB(cleanSeasonTitle(title)),
+                                 'year': ''})
                 match = re.compile('src="(.+?)"', re.DOTALL).findall(entry)
                 thumbUrl = ""
                 if match:
