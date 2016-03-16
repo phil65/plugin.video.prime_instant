@@ -213,20 +213,19 @@ def listOriginals():
     content = content[content.find('<map name="pilots'):]
     content = content[:content.find('</map>')]
     #spl = content.split('shape="rect"')
-    thumbs = {}
-    thumbs['maninthehighcastle'] = 'http://ecx.images-amazon.com/images/I/5114a5G6oQL.jpg'
-    thumbs['cocked'] = 'http://ecx.images-amazon.com/images/I/51ky16-xESL.jpg'
-    thumbs['maddogs'] = 'http://ecx.images-amazon.com/images/I/61mWRYn7U2L.jpg'
-    thumbs['thenewyorkerpresents'] = 'http://ecx.images-amazon.com/images/I/41Yb8SUjMzL.jpg'
-    thumbs['pointofhonor'] = 'http://ecx.images-amazon.com/images/I/51OBmT5ARUL.jpg'
-    thumbs['downdog'] = 'http://ecx.images-amazon.com/images/I/51N2zkhOxGL.jpg'
-    thumbs['salemrogers'] = 'http://ecx.images-amazon.com/images/I/510nXRWkoaL.jpg'
-    thumbs['table58'] = 'http://ecx.images-amazon.com/images/I/51AIPgzNiWL.jpg'
-    thumbs['buddytechdetective'] = 'http://ecx.images-amazon.com/images/I/513pbjgDLYL.jpg'
-    thumbs['sarasolvesit'] = 'http://ecx.images-amazon.com/images/I/51Y5G5RbLUL.jpg'
-    thumbs['stinkyanddirty'] = 'http://ecx.images-amazon.com/images/I/51WzytCUmdL.jpg'
-    thumbs['niko'] = 'http://ecx.images-amazon.com/images/I/51XjJrg9JLL.jpg'
-    thumbs['justaddmagic'] = 'http://ecx.images-amazon.com/images/I/5159YFd0hQL.jpg'
+    thumbs = { 'maninthehighcastle': 'http://ecx.images-amazon.com/images/I/5114a5G6oQL.jpg',
+               'cocked': 'http://ecx.images-amazon.com/images/I/51ky16-xESL.jpg',
+               'maddogs': 'http://ecx.images-amazon.com/images/I/61mWRYn7U2L.jpg',
+               'thenewyorkerpresents': 'http://ecx.images-amazon.com/images/I/41Yb8SUjMzL.jpg',
+               'pointofhonor': 'http://ecx.images-amazon.com/images/I/51OBmT5ARUL.jpg',
+               'downdog': 'http://ecx.images-amazon.com/images/I/51N2zkhOxGL.jpg',
+               'salemrogers': 'http://ecx.images-amazon.com/images/I/510nXRWkoaL.jpg',
+               'table58': 'http://ecx.images-amazon.com/images/I/51AIPgzNiWL.jpg',
+               'buddytechdetective': 'http://ecx.images-amazon.com/images/I/513pbjgDLYL.jpg',
+               'sarasolvesit': 'http://ecx.images-amazon.com/images/I/51Y5G5RbLUL.jpg',
+               'stinkyanddirty': 'http://ecx.images-amazon.com/images/I/51WzytCUmdL.jpg',
+               'niko': 'http://ecx.images-amazon.com/images/I/51XjJrg9JLL.jpg',
+               'justaddmagic': 'http://ecx.images-amazon.com/images/I/5159YFd0hQL.jpg'}
     pilotsmatch = re.compile('<area.+?alt="(.+?)".+?href="(.+?)"', re.DOTALL).findall(content)
     for pilotval in pilotsmatch:
         match = re.compile("/gp/product/(.+?)/", re.DOTALL).findall(pilotval[1])
@@ -523,7 +522,7 @@ def listSimilarShows(videoID):
                 title = cleanTitle(title)
                 dlParams.append({'type': 'tv',
                                  'id': videoID,
-                                 'title': cleanTitleTMDB(cleanSeasonTitle(title))
+                                 'title': cleanTitleTMDB(cleanSeasonTitle(title)),
                                  'year': ''})
                 match = re.compile('src="(.+?)"', re.DOTALL).findall(entry)
                 thumbUrl = ""
