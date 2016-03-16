@@ -43,8 +43,6 @@ cj = cookielib.MozillaCookieJar()
 downloadScript = os.path.join(addonFolder, "download.py").encode('utf-8')
 downloadScriptTV = os.path.join(addonFolder, "downloadTV.py").encode('utf-8')
 cacheFolder = os.path.join(addonUserDataFolder, "cache")
-cacheFolderCoversTMDB = os.path.join(cacheFolder, "covers")
-cacheFolderFanartTMDB = os.path.join(cacheFolder, "fanart")
 addonFolderResources = os.path.join(addonFolder, "resources")
 defaultFanart = os.path.join(addonFolderResources, "fanart.png")
 libraryFolder = os.path.join(addonUserDataFolder, "library")
@@ -584,19 +582,15 @@ def listEpisodes(seriesID, seasonID, thumb, content="", seriesName=""):
     if match:
         addon.setSetting('csrfToken', match[0])
     matchSeason = re.compile('"seasonNumber":"(.+?)"', re.DOTALL).findall(content)
-    seasonNr = "0"
-    if matchSeason:
-        seasonNr = matchSeason[0]
-
+    seasonNr = matchSeason[0] if matchSeason else "0"
     epliststart = content.find("dv-episode-list")
     eplistend = content.find("ND dv-dp-top-wrapper", epliststart)
     content = content[epliststart:eplistend]
     for entry in content.split('<div id="dv-el-id-'):
         match = re.compile('<!-- Title -->(.+?)</', re.DOTALL).findall(entry)
-        if not match or not checkEpisodeStatus(entry):
+        if not match or not '?autoplay=1' in entry:
             continue
-        title = match[0]
-        title = cleanTitle(title)
+        title = cleanTitle(match[0])
         episodeNr = title[:title.find('.')]
         title = title[title.find('.') + 1:].strip()
         match = re.compile('data-asin="(.+?)"', re.DOTALL).findall(entry)
@@ -1025,18 +1019,21 @@ def addDir(name, url, mode, iconimage, videoType=""):
 
 
 def addShowDir(name, url, mode, iconimage, videoType="", desc="", duration="", year="", mpaa="", director="", genre="", rating="", showAll=False):
-    filename = (''.join(c for c in url if c not in '/\\:?"*|<>')).strip() + ".jpg"
-    coverFile = os.path.join(cacheFolderCoversTMDB, filename)
-    fanartFile = os.path.join(cacheFolderFanartTMDB, filename)
-    if os.path.exists(coverFile):
-        iconimage = coverFile
     sAll = "&showAll=true" if showAll else ""
     u = sys.argv[0] + "?url=" + urllib.quote_plus(url.encode("utf8")) + "&mode=" + str(mode) + "&thumb=" + urllib.quote_plus(iconimage.encode("utf8")) + "&name=" + urllib.quote_plus(name.encode("utf8")) + sAll
     liz = xbmcgui.ListItem(name,
                            iconImage="DefaultTVShows.png",
                            thumbnailImage=iconimage)
-    liz.setInfo(type="video", infoLabels={"title": name, "plot": desc, "duration": duration, "year": year, "mpaa": mpaa, "director": director, "genre": genre, "rating": rating})
-    liz.setArt({"fanart": fanartFile, "poster": iconimage})
+    infos = {"title": name,
+             "plot": desc,
+             "duration": duration,
+             "year": year,
+             "mpaa": mpaa,
+             "director": director,
+             "genre": genre,
+             "rating": rating}
+    liz.setInfo(type="video", infoLabels=infos)
+    liz.setArt({"poster": iconimage})
     entries = []
     entries.append((translation(30051), 'RunPlugin(plugin://' + addonID + '/?mode=playTrailer&url=' + urllib.quote_plus(url.encode("utf8")) + ')',))
     entries.append((translation(30052), 'RunPlugin(plugin://' + addonID + '/?mode=addToQueue&url=' + urllib.quote_plus(url.encode("utf8")) + '&videoType=' + urllib.quote_plus(videoType.encode("utf8")) + ')',))
@@ -1048,18 +1045,22 @@ def addShowDir(name, url, mode, iconimage, videoType="", desc="", duration="", y
 
 
 def addShowDirR(name, url, mode, iconimage, videoType="", desc="", duration="", year="", mpaa="", director="", genre="", rating="", showAll=False):
-    filename = (''.join(c for c in url if c not in '/\\:?"*|<>')).strip() + ".jpg"
-    coverFile = os.path.join(cacheFolderCoversTMDB, filename)
-    fanartFile = os.path.join(cacheFolderFanartTMDB, filename)
-    if os.path.exists(coverFile):
-        iconimage = coverFile
     sAll = "&showAll=true" if showAll else ""
     u = sys.argv[0] + "?url=" + urllib.quote_plus(url.encode("utf8")) + "&mode=" + str(mode) + "&thumb=" + urllib.quote_plus(iconimage.encode("utf8")) + "&name=" + urllib.quote_plus(name.encode("utf8")) + sAll
     liz = xbmcgui.ListItem(name,
                            iconImage="DefaultTVShows.png",
                            thumbnailImage=iconimage)
-    liz.setInfo(type="video", infoLabels={"mediatype": "tvshow", "title": name, "plot": desc, "duration": duration, "year": year, "mpaa": mpaa, "director": director, "genre": genre, "rating": rating})
-    liz.setArt({"fanart": fanartFile, "poster": iconimage})
+    infos = {"mediatype": "tvshow",
+             "title": name,
+             "plot": desc,
+             "duration": duration,
+             "year": year,
+             "mpaa": mpaa,
+             "director": director,
+             "genre": genre,
+             "rating": rating}
+    liz.setInfo(type="video", infoLabels=infos)
+    liz.setArt({"poster": iconimage})
     entries = []
     entries.append((translation(30051), 'RunPlugin(plugin://' + addonID + '/?mode=playTrailer&url=' + urllib.quote_plus(url.encode("utf8")) + ')',))
     entries.append((translation(30053), 'RunPlugin(plugin://' + addonID + '/?mode=removeFromQueue&url=' + urllib.quote_plus(url.encode("utf8")) + '&videoType=' + urllib.quote_plus(videoType.encode("utf8")) + ')',))
@@ -1071,8 +1072,6 @@ def addShowDirR(name, url, mode, iconimage, videoType="", desc="", duration="", 
 
 
 def addLink(name, url, mode, iconimage, videoType="", desc="", duration="", year="", mpaa="", director="", genre="", rating=""):
-    filename = (''.join(c for c in url if c not in '/\\:?"*|<>')).strip() + ".jpg"
-    fanartFile = os.path.join(cacheFolderFanartTMDB, filename)
     u = sys.argv[0] + "?url=" + urllib.quote_plus(url.encode("utf8")) + "&mode=" + str(mode) + "&name=" + urllib.quote_plus(name.encode("utf8")) + "&thumb=" + urllib.quote_plus(iconimage.encode("utf8"))
     liz = xbmcgui.ListItem(name,
                            iconImage="DefaultTVShows.png",
@@ -1087,7 +1086,7 @@ def addLink(name, url, mode, iconimage, videoType="", desc="", duration="", year
              "genre": genre,
              "rating": rating}
     liz.setInfo(type="video", infoLabels=infos)
-    liz.setArt({"fanart": fanartFile, "poster": iconimage})
+    liz.setArt({"poster": iconimage})
     entries = []
     entries.append((translation(30054), 'RunPlugin(plugin://' + addonID + '/?mode=playVideo&url=' + urllib.quote_plus(url.encode("utf8")) + '&selectQuality=true)',))
     if videoType != "episode":
@@ -1108,8 +1107,6 @@ def addLink(name, url, mode, iconimage, videoType="", desc="", duration="", year
 
 
 def addLinkR(name, url, mode, iconimage, videoType="", desc="", duration="", year="", mpaa="", director="", genre="", rating=""):
-    filename = (''.join(c for c in url if c not in '/\\:?"*|<>')).strip() + ".jpg"
-    fanartFile = os.path.join(cacheFolderFanartTMDB, filename)
     u = sys.argv[0] + "?url=" + urllib.quote_plus(url.encode("utf8")) + "&mode=" + str(mode) + "&name=" + urllib.quote_plus(name.encode("utf8")) + "&thumb=" + urllib.quote_plus(iconimage.encode("utf8"))
     liz = xbmcgui.ListItem(name,
                            iconImage="DefaultTVShows.png",
@@ -1124,7 +1121,7 @@ def addLinkR(name, url, mode, iconimage, videoType="", desc="", duration="", yea
              "genre": genre,
              "rating": rating}
     liz.setInfo(type="video", infoLabels=infos)
-    liz.setArt({"fanart": fanartFile, "poster": iconimage})
+    liz.setArt({"poster": iconimage})
     entries = []
     entries.append((translation(30054), 'RunPlugin(plugin://' + addonID + '/?mode=playVideo&url=' + urllib.quote_plus(url.encode("utf8")) + '&selectQuality=true)',))
     entries.append((translation(30060), 'Container.Update(plugin://' + addonID + '/?mode=showInfo&url=' + urllib.quote_plus(url.encode("utf8")) + ')',))
@@ -1144,14 +1141,12 @@ def addLinkR(name, url, mode, iconimage, videoType="", desc="", duration="", yea
 
 
 def addSeasonDir(name, url, mode, iconimage, seriesName, seriesID):
-    filename = (''.join(c for c in seriesID if c not in '/\\:?"*|<>')).strip() + ".jpg"
-    fanartFile = os.path.join(cacheFolderFanartTMDB, filename)
     u = sys.argv[0] + "?url=" + urllib.quote_plus(url.encode("utf8")) + "&mode=" + str(mode) + "&seriesID=" + urllib.quote_plus(seriesID.encode("utf8")) + "&thumb=" + urllib.quote_plus(iconimage.encode("utf8")) + "&name=" + urllib.quote_plus(seriesName.encode("utf8"))
     liz = xbmcgui.ListItem(name,
                            iconImage="DefaultTVShows.png",
                            thumbnailImage=iconimage)
     liz.setInfo(type="video", infoLabels={"title": name, "TVShowTitle": seriesName, "mediatype": "season"})
-    liz.setArt({"fanart": fanartFile, "poster": iconimage})
+    liz.setArt({"poster": iconimage})
     entries = []
     entries.append((translation(30056), 'RunPlugin(plugin://' + addonID + '/?mode=addSeasonToLibrary&url=' + urllib.quote_plus(url.encode("utf8")) + '&seriesID=' + urllib.quote_plus(seriesID.encode("utf8")) + '&name=' + urllib.quote_plus(seriesName.strip().encode("utf8")) + ')',))
     liz.addContextMenuItems(entries)
@@ -1160,8 +1155,6 @@ def addSeasonDir(name, url, mode, iconimage, seriesName, seriesID):
 
 
 def addEpisodeLink(name, url, mode, iconimage, desc="", duration="", season="", episodeNr="", seriesID="", playcount="", aired="", seriesName=""):
-    filename = (''.join(c for c in seriesID if c not in '/\\:?"*|<>')).strip() + ".jpg"
-    fanartFile = os.path.join(cacheFolderFanartTMDB, filename)
     u = sys.argv[0] + "?url=" + urllib.quote_plus(url.encode("utf8")) + "&mode=" + str(mode)
     liz = xbmcgui.ListItem(name,
                            iconImage="DefaultTVShows.png",
@@ -1176,17 +1169,12 @@ def addEpisodeLink(name, url, mode, iconimage, desc="", duration="", season="", 
              "playcount": playcount,
              "TVShowTitle": seriesName}
     liz.setInfo(type="video", infoLabels=infos)
-    liz.setArt({"fanart": fanartFile})
     entries = []
     entries.append((translation(30054), 'RunPlugin(plugin://' + addonID + '/?mode=playVideo&url=' + urllib.quote_plus(url.encode("utf8")) + '&selectQuality=true)',))
     liz.addContextMenuItems(entries)
     liz.setProperty('IsPlayable', 'true')
     ok = xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]), url=u, listitem=liz)
     return ok
-
-
-def checkEpisodeStatus(entry):
-    return '?autoplay=1' in entry
 
 params = parameters_string_to_dict(sys.argv[2])
 mode = urllib.unquote_plus(params.get('mode', ''))
@@ -1203,10 +1191,6 @@ if not os.path.isdir(addonUserDataFolder):
     os.mkdir(addonUserDataFolder)
 if not os.path.isdir(cacheFolder):
     os.mkdir(cacheFolder)
-if not os.path.isdir(cacheFolderCoversTMDB):
-    os.mkdir(cacheFolderCoversTMDB)
-if not os.path.isdir(cacheFolderFanartTMDB):
-    os.mkdir(cacheFolderFanartTMDB)
 if not os.path.isdir(libraryFolder):
     os.mkdir(libraryFolder)
 if not os.path.isdir(libraryFolderMovies):
