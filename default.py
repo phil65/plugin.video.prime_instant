@@ -589,44 +589,41 @@ def listEpisodes(seriesID, seasonID, thumb, content="", seriesName=""):
     content = content[epliststart:eplistend]
     for entry in content.split('<div id="dv-el-id-'):
         match = re.compile('<!-- Title -->(.+?)</', re.DOTALL).findall(entry)
-        if match and checkEpisodeStatus(entry):
-            title = match[0]
-            title = cleanTitle(title)
-            episodeNr = title[:title.find('.')]
-            title = title[title.find('.') + 1:].strip()
-            match = re.compile('data-asin="(.+?)"', re.DOTALL).findall(entry)
-            episodeID = match[0]
-            match = re.compile('<p class="a-color-base a-text-normal">(.+?)</p>', re.DOTALL).findall(entry)
-            desc = ""
-            if match:
-                desc = cleanTitle(match[0])
-            length = ""
-            match1 = re.compile('class="dv-badge runtime">(.+?)h(.+?)min<', re.DOTALL).findall(entry)
-            match2 = re.compile('class="dv-badge runtime">(.+?)Std.(.+?)Min.<', re.DOTALL).findall(entry)
-            match3 = re.compile('class="dv-badge runtime">(.+?)min<', re.DOTALL).findall(entry)
-            match4 = re.compile('class="dv-badge runtime">(.+?)Min.<', re.DOTALL).findall(entry)
-            if match1:
-                length = str(int(match1[0][0].strip()) * 60 + int(match1[0][1].strip()))
-            elif match2:
-                length = str(int(match2[0][0].strip()) * 60 + int(match2[0][1].strip()))
-            elif match3:
-                length = match3[0].strip()
-            elif match4:
-                length = match4[0].strip()
-            match = re.compile('class="dv-badge release-date">(.+?)<', re.DOTALL).findall(entry)
-            aired = ""
-            if match:
-                aired = match[0] + "-01-01"
-            match = re.compile('background-image: url\((.+?)\);', re.DOTALL).findall(entry)
-            if match:
-                thumb = match[0].replace("._SX133_QL80_.jpg", "._SX400_.jpg")
-            match = re.compile('class="progress-bar">.+?width: (.+?)%', re.DOTALL).findall(entry)
-            playcount = 0
-            if match:
-                percentage = match[0]
-                if int(percentage) > 95:
-                    playcount = 1
-            addEpisodeLink(title, episodeID, 'playVideo', thumb, desc, length, seasonNr, episodeNr, seriesID, playcount, aired, seriesName)
+        if not match or not checkEpisodeStatus(entry):
+            continue
+        title = match[0]
+        title = cleanTitle(title)
+        episodeNr = title[:title.find('.')]
+        title = title[title.find('.') + 1:].strip()
+        match = re.compile('data-asin="(.+?)"', re.DOTALL).findall(entry)
+        episodeID = match[0]
+        match = re.compile('<p class="a-color-base a-text-normal">(.+?)</p>', re.DOTALL).findall(entry)
+        desc = ""
+        if match:
+            desc = cleanTitle(match[0])
+        length = ""
+        match1 = re.compile('class="dv-badge runtime">(.+?)h(.+?)min<', re.DOTALL).findall(entry)
+        match2 = re.compile('class="dv-badge runtime">(.+?)Std.(.+?)Min.<', re.DOTALL).findall(entry)
+        match3 = re.compile('class="dv-badge runtime">(.+?)min<', re.DOTALL).findall(entry)
+        match4 = re.compile('class="dv-badge runtime">(.+?)Min.<', re.DOTALL).findall(entry)
+        if match1:
+            length = str(int(match1[0][0].strip()) * 60 + int(match1[0][1].strip()))
+        elif match2:
+            length = str(int(match2[0][0].strip()) * 60 + int(match2[0][1].strip()))
+        elif match3:
+            length = match3[0].strip()
+        elif match4:
+            length = match4[0].strip()
+        match = re.compile('class="dv-badge release-date">(.+?)<', re.DOTALL).findall(entry)
+        aired = ""
+        if match:
+            aired = match[0] + "-01-01"
+        match = re.compile('background-image: url\((.+?)\);', re.DOTALL).findall(entry)
+        if match:
+            thumb = match[0].replace("._SX133_QL80_.jpg", "._SX400_.jpg")
+        match = re.compile('class="progress-bar">.+?width: (.+?)%', re.DOTALL).findall(entry)
+        playcount = 1 if match and int(match[0]) > 95 else 0
+        addEpisodeLink(title, episodeID, 'playVideo', thumb, desc, length, seasonNr, episodeNr, seriesID, playcount, aired, seriesName)
     xbmcplugin.endOfDirectory(pluginhandle)
 
 
@@ -781,13 +778,11 @@ def deleteCache():
 def getUnicodePage(url):
     print url
     req = opener.open(url)
-    content = ""
     if "content-type" in req.headers and "charset=" in req.headers['content-type']:
         encoding = req.headers['content-type'].split('charset=')[-1]
-        content = unicode(req.read(), encoding)
+        return unicode(req.read(), encoding)
     else:
-        content = unicode(req.read(), "utf-8")
-    return content
+        return unicode(req.read(), "utf-8")
 
 
 def getAsciiPage(url):
@@ -819,27 +814,28 @@ def cipherKey(s, key="xlordkx"):
 def search(mediatype):
     keyboard = xbmc.Keyboard('', translation(30015))
     keyboard.doModal()
-    if keyboard.isConfirmed() and keyboard.getText():
-        search_string = unicode(keyboard.getText(), "utf-8").replace(" ", "+")
-        search_string = urllib.quote_plus(search_string.encode("utf8"))
-        if siteVersion == "de":
-            if mediatype == "movies":
-                listMovies(urlMain + "/mn/search/ajax/?fst=as%3Aoff&rh=n%3A3010075031%2Cn%3A!3010076031%2Cn%3A3015915031%2Ck%3A" + search_string + "%2Cp_85%3A3282148031")
-            elif mediatype == "tv":
-                listShows(urlMain + "/mn/search/ajax/?fst=as%3Aoff&rh=n%3A3010075031%2Cn%3A!3010076031%2Cn%3A3015916031%2Ck%3A" + search_string + "%2Cp_85%3A3282148031&qid=1453585050")
-        elif siteVersion == "com":
-            if mediatype == "movies":
-                listMovies(urlMain + "/mn/search/ajax/?_encoding=UTF8&url=node%3D7613704011&search-alias=instant-video&field-keywords=" + search_string)
-            elif mediatype == "tv":
-                if not showPaidVideos:
-                    listShows(urlMain + "/mn/search/ajax/?_encoding=UTF8&url=node%3D7613705011&search-alias=instant-video&field-keywords=" + search_string)
-                else:
-                    listShows(urlMain + "/mn/search/ajax/?_encoding=UTF8&url=node%3D2858778011&search-alias=instant-video&field-keywords=" + search_string)
-        elif siteVersion == "co.uk":
-            if mediatype == "movies":
-                listMovies(urlMain + "/mn/search/ajax/?_encoding=UTF8&url=node%3D3356010031&search-alias=instant-video&field-keywords=" + search_string)
-            elif mediatype == "tv":
-                listShows(urlMain + "/mn/search/ajax/?_encoding=UTF8&url=node%3D3356011031&search-alias=instant-video&field-keywords=" + search_string)
+    if not keyboard.isConfirmed() or not keyboard.getText():
+        return None
+    search_string = unicode(keyboard.getText(), "utf-8").replace(" ", "+")
+    search_string = urllib.quote_plus(search_string.encode("utf8"))
+    if siteVersion == "de":
+        if mediatype == "movies":
+            listMovies(urlMain + "/mn/search/ajax/?fst=as%3Aoff&rh=n%3A3010075031%2Cn%3A!3010076031%2Cn%3A3015915031%2Ck%3A" + search_string + "%2Cp_85%3A3282148031")
+        elif mediatype == "tv":
+            listShows(urlMain + "/mn/search/ajax/?fst=as%3Aoff&rh=n%3A3010075031%2Cn%3A!3010076031%2Cn%3A3015916031%2Ck%3A" + search_string + "%2Cp_85%3A3282148031&qid=1453585050")
+    elif siteVersion == "com":
+        if mediatype == "movies":
+            listMovies(urlMain + "/mn/search/ajax/?_encoding=UTF8&url=node%3D7613704011&search-alias=instant-video&field-keywords=" + search_string)
+        elif mediatype == "tv":
+            if not showPaidVideos:
+                listShows(urlMain + "/mn/search/ajax/?_encoding=UTF8&url=node%3D7613705011&search-alias=instant-video&field-keywords=" + search_string)
+            else:
+                listShows(urlMain + "/mn/search/ajax/?_encoding=UTF8&url=node%3D2858778011&search-alias=instant-video&field-keywords=" + search_string)
+    elif siteVersion == "co.uk":
+        if mediatype == "movies":
+            listMovies(urlMain + "/mn/search/ajax/?_encoding=UTF8&url=node%3D3356010031&search-alias=instant-video&field-keywords=" + search_string)
+        elif mediatype == "tv":
+            listShows(urlMain + "/mn/search/ajax/?_encoding=UTF8&url=node%3D3356011031&search-alias=instant-video&field-keywords=" + search_string)
 
 
 def addToQueue(videoID, videoType):
@@ -911,8 +907,7 @@ def cleanInput(str):
             str = str.replace("&#" + c + ";", unichr(int(c)))
 
     p = HTMLParser()
-    str = p.unescape(str)
-    return str
+    return p.unescape(str)
 
 
 def cleanTitle(title):
@@ -1011,8 +1006,11 @@ def parameters_string_to_dict(parameters):
 
 
 def addDir(name, url, mode, iconimage, videoType=""):
-    u = sys.argv[0] + "?url=" + urllib.quote_plus(url.encode("utf8")) + "&mode=" + str(mode) + "&thumb=" + urllib.quote_plus(iconimage.encode("utf8")) + "&videoType=" + urllib.quote_plus(videoType.encode("utf8"))
-    ok = True
+    u = "{}?url={}&mode={}&thumb={}&videoType={}".format(sys.argv[0],
+                                                         urllib.quote_plus(url.encode("utf8")),
+                                                         str(mode),
+                                                         urllib.quote_plus(iconimage.encode("utf8")),
+                                                         urllib.quote_plus(videoType.encode("utf8")))
     liz = xbmcgui.ListItem(name,
                            iconImage="DefaultTVShows.png",
                            thumbnailImage=iconimage)
@@ -1030,7 +1028,6 @@ def addShowDir(name, url, mode, iconimage, videoType="", desc="", duration="", y
         iconimage = coverFile
     sAll = "&showAll=true" if showAll else ""
     u = sys.argv[0] + "?url=" + urllib.quote_plus(url.encode("utf8")) + "&mode=" + str(mode) + "&thumb=" + urllib.quote_plus(iconimage.encode("utf8")) + "&name=" + urllib.quote_plus(name.encode("utf8")) + sAll
-    ok = True
     liz = xbmcgui.ListItem(name,
                            iconImage="DefaultTVShows.png",
                            thumbnailImage=iconimage)
@@ -1156,7 +1153,16 @@ def addEpisodeLink(name, url, mode, iconimage, desc="", duration="", season="", 
     liz = xbmcgui.ListItem(name,
                            iconImage="DefaultTVShows.png",
                            thumbnailImage=iconimage)
-    liz.setInfo(type="video", infoLabels={"title": name, "mediatype": "episode", "plot": desc, "duration": duration, "season": season, "episode": episodeNr, "aired": aired, "playcount": playcount, "TVShowTitle": seriesName})
+    infos = {"title": name,
+             "mediatype": "episode",
+             "plot": desc,
+             "duration": duration,
+             "season": season,
+             "episode": episodeNr,
+             "aired": aired,
+             "playcount": playcount,
+             "TVShowTitle": seriesName}
+    liz.setInfo(type="video", infoLabels=infos)
     liz.setArt({"fanart": fanartFile})
     entries = []
     entries.append((translation(30054), 'RunPlugin(plugin://' + addonID + '/?mode=playVideo&url=' + urllib.quote_plus(url.encode("utf8")) + '&selectQuality=true)',))
