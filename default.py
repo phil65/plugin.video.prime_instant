@@ -521,7 +521,10 @@ def listSimilarShows(videoID):
                 match = re.compile('alt="(.+?)"', re.DOTALL).findall(entry)
                 title = match[0]
                 title = cleanTitle(title)
-                dlParams.append({'type': 'tv', 'id': videoID, 'title': cleanTitleTMDB(cleanSeasonTitle(title)), 'year': ''})
+                dlParams.append({'type': 'tv',
+                                 'id': videoID,
+                                 'title': cleanTitleTMDB(cleanSeasonTitle(title))
+                                 'year': ''})
                 match = re.compile('src="(.+?)"', re.DOTALL).findall(entry)
                 thumbUrl = ""
                 if match:
@@ -654,7 +657,9 @@ def changeStream(videoID):
     title = args.get('title', videoID)[0]
     thumburl = args.get('thumbnailimage', '')[0]
     xbmc.Player().pause()
-    listitem = xbmcgui.ListItem(title, path="http://127.0.0.1:59950/" + videoID + ".mp4", thumbnailImage=thumburl)
+    listitem = xbmcgui.ListItem(title,
+                                path="http://127.0.0.1:59950/" + videoID + ".mp4",
+                                thumbnailImage=thumburl)
     listitem.setProperty('IsPlayable', 'true')
     listitem.setProperty('TotalTime', str(xbmc.Player().getTotalTime()))
     listitem.setProperty('ResumeTime', str(xbmc.Player().getTime()))
@@ -757,21 +762,11 @@ def showInfo(videoID):
             genre=genre,
             rating=rating)
     xbmcplugin.endOfDirectory(pluginhandle)
-    xbmc.sleep(100)
 
 
 def deleteCookies():
     if os.path.exists(cookieFile):
         os.remove(cookieFile)
-
-
-def deleteCache():
-    if os.path.exists(cacheFolder):
-        try:
-            shutil.rmtree(cacheFolder)
-        except:
-            shutil.rmtree(cacheFolder)
-
 
 def getUnicodePage(url):
     print url
@@ -1243,8 +1238,6 @@ elif mode == 'listEpisodes':
     listEpisodes(seriesID, url, thumb, "", name)
 elif mode == 'deleteCookies':
     deleteCookies()
-elif mode == 'deleteCache':
-    deleteCache()
 elif mode == 'playTrailer':
     playVideo(url, selectQuality == "true", True)
 elif mode == 'listSimilarMovies':
