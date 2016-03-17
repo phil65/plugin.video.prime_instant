@@ -657,8 +657,26 @@ def playVideo(videoID, selectQuality=False, playTrailer=False):
             return None
 
         deviceID = hashlib.sha224("CustomerID" + userAgent).hexdigest()
-
-        asincontent = getUnicodePage('https://'+apiMain+'.amazon.com/cdp/catalog/GetPlaybackResources?asin='+videoID+'&consumptionType=Streaming&desiredResources=AudioVideoUrls%2CCatalogMetadata%2CTransitionTimecodes%2CTrickplayUrls%2CSubtitlePresets%2CSubtitleUrls&deviceID='+deviceID+'&deviceTypeID=AOAGZA014O5RE&firmware=1&marketplaceID='+marketplaceId+'&resourceUsage=CacheResources&videoMaterialType=Feature&operatingSystemName=Windows&operatingSystemVersion=10.0&customerID='+customerID+'&token='+token+'&deviceDrmOverride=CENC&deviceStreamingTechnologyOverride=DASH&deviceProtocolOverride=Https&deviceBitrateAdaptationsOverride=CVBR%2CCBR&audioTrackId=all&titleDecorationScheme=primary-content')
+        params = {"asin": videoID,
+                  "consumptionType": "Streaming",
+                  "desiredResources": "AudioVideoUrls,CatalogMetadata,TransitionTimecodes,TrickplayUrls,SubtitlePresets,SubtitleUrls",
+                  "deviceID": deviceID,
+                  "deviceTypeID": "AOAGZA014O5RE",
+                  "firmware": 1,
+                  "marketplaceID": marketplaceId,
+                  "resourceUsage": "CacheResources",
+                  "videoMaterialType": "Feature",
+                  "operatingSystemName": "Windows",
+                  "operatingSystemVersion": "10.0",
+                  "customerID": customerID,
+                  "token": token,
+                  "deviceDrmOverride": "CENC",
+                  "deviceStreamingTechnologyOverride": "DASH",
+                  "deviceProtocolOverride": "Https",
+                  "deviceBitrateAdaptationsOverride": "CVBR,CBR",
+                  "audioTrackId": "all",
+                  "titleDecorationScheme": "primary-content"}
+        asincontent = getUnicodePage('https://'+apiMain+'.amazon.com/cdp/catalog/GetPlaybackResources?' + urllib.urlencode(params))
 
         asininfo = json.loads(asincontent)
         mpdURL = asininfo['audioVideoUrls']['avCdnUrlSets'][0]['avUrlInfoList'][0]['url']
@@ -666,8 +684,22 @@ def playVideo(videoID, selectQuality=False, playTrailer=False):
             return None
         mpdURL = mpdURL.replace("https", "http")
         log('MPD: ' + mpdURL)
-
-        licURL = 'https://'+apiMain+'.amazon.com/cdp/catalog/GetPlaybackResources?asin='+videoID+'&consumptionType=Streaming&desiredResources=Widevine2License&deviceID='+deviceID+'&deviceTypeID=AOAGZA014O5RE&firmware=1&marketplaceID='+marketplaceId+'&resourceUsage=ImmediateConsumption&videoMaterialType=Feature&operatingSystemName=Windows&operatingSystemVersion=10.0&customerID='+customerID+'&token='+token+'&deviceDrmOverride=CENC&deviceStreamingTechnologyOverride=DASH'
+        params = {"asin": videoID,
+                  "consumptionType": "Streaming",
+                  "desiredResources": "Widevine2License",
+                  "deviceID": deviceID,
+                  "deviceTypeID": "AOAGZA014O5RE",
+                  "firmware": 1,
+                  "marketplaceID": marketplaceId,
+                  "resourceUsage": "ImmediateConsumption",
+                  "videoMaterialType": "Feature",
+                  "operatingSystemName": "Windows",
+                  "operatingSystemVersion": "10.0",
+                  "customerID": customerID,
+                  "token": token,
+                  "deviceDrmOverride": "CENC",
+                  "deviceStreamingTechnologyOverride": "DASH"}
+        licURL = 'https://'+apiMain+'.amazon.com/cdp/catalog/GetPlaybackResources?' + urllib.urlencode(params)
         listitem = xbmcgui.ListItem(path=mpdURL)
         listitem.setProperty('inputstream.mpd.license_type', 'com.widevine.alpha')
         listitem.setProperty('inputstream.mpd.license_key', licURL)
