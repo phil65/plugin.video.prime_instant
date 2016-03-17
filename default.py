@@ -64,7 +64,7 @@ watchlistTVOrder = ["DATE_ADDED_DESC", "TITLE_ASC"][int(watchlistTVOrder)]
 selectLanguage = addon.getSetting("selectLanguage")
 siteVersion = addon.getSetting("siteVersion")
 apiMain = ["atv-ps", "atv-ps-eu", "atv-ps-eu"][int(siteVersion)]
-marketplaceId=["ATVPDKIKX0DER", "A1F83G8C2ARO7P", "A1PA6795UKMFR9", "A1VC38T7YXB528"][int(siteVersion)]
+marketplaceId = ["ATVPDKIKX0DER", "A1F83G8C2ARO7P", "A1PA6795UKMFR9", "A1VC38T7YXB528"][int(siteVersion)]
 siteVersionsList = ["com", "co.uk", "de", "jp"]
 siteVersion = siteVersionsList[int(siteVersion)]
 viewIdMovies = addon.getSetting("viewIdMovies")
@@ -163,29 +163,32 @@ def browseTV():
 
 def listDecadesMovie():
     if siteVersion == "de":
-        addDir(translation(30016), urlMain + "/gp/search/ajax/?rh=n%3A3279204031%2Cn%3A!3010076031%2Cn%3A3356018031%2Cp_n_feature_three_browse-bin%3A3289642031&sort=popularity-rank&ie=UTF8", 'listMovies', "")
-        addDir(translation(30017), urlMain + "/gp/search/ajax/?rh=n%3A3279204031%2Cn%3A!3010076031%2Cn%3A3356018031%2Cp_n_feature_three_browse-bin%3A3289643031&sort=popularity-rank&ie=UTF8", 'listMovies', "")
-        addDir(translation(30018), urlMain + "/gp/search/ajax/?rh=n%3A3279204031%2Cn%3A!3010076031%2Cn%3A3356018031%2Cp_n_feature_three_browse-bin%3A3289644031&sort=popularity-rank&ie=UTF8", 'listMovies', "")
-        addDir(translation(30019), urlMain + "/gp/search/ajax/?rh=n%3A3279204031%2Cn%3A!3010076031%2Cn%3A3356018031%2Cp_n_feature_three_browse-bin%3A3289645031&sort=popularity-rank&ie=UTF8", 'listMovies', "")
-        addDir(translation(30020), urlMain + "/gp/search/ajax/?rh=n%3A3279204031%2Cn%3A!3010076031%2Cn%3A3356018031%2Cp_n_feature_three_browse-bin%3A3289646031&sort=popularity-rank&ie=UTF8", 'listMovies', "")
-        addDir(translation(30021), urlMain + "/gp/search/ajax/?rh=n%3A3279204031%2Cn%3A!3010076031%2Cn%3A3356018031%2Cp_n_feature_three_browse-bin%3A3289647031&sort=popularity-rank&ie=UTF8", 'listMovies', "")
-        addDir(translation(30022), urlMain + "/gp/search/ajax/?rh=n%3A3279204031%2Cn%3A!3010076031%2Cn%3A3356018031%2Cp_n_feature_three_browse-bin%3A3289648031&sort=popularity-rank&ie=UTF8", 'listMovies', "")
+        common = "/gp/search/ajax/?rh=n%3A3279204031%2Cn%3A!3010076031%2Cn%3A3356018031%2Cp_n_feature_three_browse-bin%3A"
+        addDir(translation(30016), urlMain + common + "3289642031&sort=popularity-rank&ie=UTF8", 'listMovies', "")
+        addDir(translation(30017), urlMain + common + "3289643031&sort=popularity-rank&ie=UTF8", 'listMovies', "")
+        addDir(translation(30018), urlMain + common + "3289644031&sort=popularity-rank&ie=UTF8", 'listMovies', "")
+        addDir(translation(30019), urlMain + common + "3289645031&sort=popularity-rank&ie=UTF8", 'listMovies', "")
+        addDir(translation(30020), urlMain + common + "3289646031&sort=popularity-rank&ie=UTF8", 'listMovies', "")
+        addDir(translation(30021), urlMain + common + "3289647031&sort=popularity-rank&ie=UTF8", 'listMovies', "")
+        addDir(translation(30022), urlMain + common + "3289648031&sort=popularity-rank&ie=UTF8", 'listMovies', "")
     elif siteVersion == "com":
-        addDir(translation(30016), urlMain + "/gp/search/ajax/?rh=n%3A2676882011%2Cn%3A7613704011%2Cp_n_feature_three_browse-bin%3A2651255011&sort=popularity-rank&ie=UTF8", 'listMovies', "")
-        addDir(translation(30017), urlMain + "/gp/search/ajax/?rh=n%3A2676882011%2Cn%3A7613704011%2Cp_n_feature_three_browse-bin%3A2651256011&sort=popularity-rank&ie=UTF8", 'listMovies', "")
-        addDir(translation(30018), urlMain + "/gp/search/ajax/?rh=n%3A2676882011%2Cn%3A7613704011%2Cp_n_feature_three_browse-bin%3A2651257011&sort=popularity-rank&ie=UTF8", 'listMovies', "")
-        addDir(translation(30019), urlMain + "/gp/search/ajax/?rh=n%3A2676882011%2Cn%3A7613704011%2Cp_n_feature_three_browse-bin%3A2651258011&sort=popularity-rank&ie=UTF8", 'listMovies', "")
-        addDir(translation(30020), urlMain + "/gp/search/ajax/?rh=n%3A2676882011%2Cn%3A7613704011%2Cp_n_feature_three_browse-bin%3A2651259011&sort=popularity-rank&ie=UTF8", 'listMovies', "")
-        addDir(translation(30021), urlMain + "/gp/search/ajax/?rh=n%3A2676882011%2Cn%3A7613704011%2Cp_n_feature_three_browse-bin%3A2651260011&sort=popularity-rank&ie=UTF8", 'listMovies', "")
-        addDir(translation(30022), urlMain + "/gp/search/ajax/?rh=n%3A2676882011%2Cn%3A7613704011%2Cp_n_feature_three_browse-bin%3A2651261011&sort=popularity-rank&ie=UTF8", 'listMovies', "")
+        common = "/gp/search/ajax/?rh=n%3A2676882011%2Cn%3A7613704011%2Cp_n_feature_three_browse-bin%3A"
+        addDir(translation(30016), urlMain + common + "2651255011&sort=popularity-rank&ie=UTF8", 'listMovies', "")
+        addDir(translation(30017), urlMain + common + "2651256011&sort=popularity-rank&ie=UTF8", 'listMovies', "")
+        addDir(translation(30018), urlMain + common + "2651257011&sort=popularity-rank&ie=UTF8", 'listMovies', "")
+        addDir(translation(30019), urlMain + common + "2651258011&sort=popularity-rank&ie=UTF8", 'listMovies', "")
+        addDir(translation(30020), urlMain + common + "2651259011&sort=popularity-rank&ie=UTF8", 'listMovies', "")
+        addDir(translation(30021), urlMain + common + "2651260011&sort=popularity-rank&ie=UTF8", 'listMovies', "")
+        addDir(translation(30022), urlMain + common + "2651261011&sort=popularity-rank&ie=UTF8", 'listMovies', "")
     elif siteVersion == "co.uk":
-        addDir(translation(30016), urlMain + "/gp/search/ajax/?rh=n%3A3280626031%2Cn%3A!3010086031%2Cn%3A3356010031%2Cp_n_feature_three_browse-bin%3A3289666031&sort=popularity-rank&ie=UTF8", 'listMovies', "")
-        addDir(translation(30017), urlMain + "/gp/search/ajax/?rh=n%3A3280626031%2Cn%3A!3010086031%2Cn%3A3356010031%2Cp_n_feature_three_browse-bin%3A3289667031&sort=popularity-rank&ie=UTF8", 'listMovies', "")
-        addDir(translation(30018), urlMain + "/gp/search/ajax/?rh=n%3A3280626031%2Cn%3A!3010086031%2Cn%3A3356010031%2Cp_n_feature_three_browse-bin%3A3289668031&sort=popularity-rank&ie=UTF8", 'listMovies', "")
-        addDir(translation(30019), urlMain + "/gp/search/ajax/?rh=n%3A3280626031%2Cn%3A!3010086031%2Cn%3A3356010031%2Cp_n_feature_three_browse-bin%3A3289669031&sort=popularity-rank&ie=UTF8", 'listMovies', "")
-        addDir(translation(30020), urlMain + "/gp/search/ajax/?rh=n%3A3280626031%2Cn%3A!3010086031%2Cn%3A3356010031%2Cp_n_feature_three_browse-bin%3A3289670031&sort=popularity-rank&ie=UTF8", 'listMovies', "")
-        addDir(translation(30021), urlMain + "/gp/search/ajax/?rh=n%3A3280626031%2Cn%3A!3010086031%2Cn%3A3356010031%2Cp_n_feature_three_browse-bin%3A3289671031&sort=popularity-rank&ie=UTF8", 'listMovies', "")
-        addDir(translation(30022), urlMain + "/gp/search/ajax/?rh=n%3A3280626031%2Cn%3A!3010086031%2Cn%3A3356010031%2Cp_n_feature_three_browse-bin%3A3289672031&sort=popularity-rank&ie=UTF8", 'listMovies', "")
+        common = "/gp/search/ajax/?rh=n%3A3280626031%2Cn%3A!3010086031%2Cn%3A3356010031%2Cp_n_feature_three_browse-bin%3A"
+        addDir(translation(30016), urlMain + common + "3289666031&sort=popularity-rank&ie=UTF8", 'listMovies', "")
+        addDir(translation(30017), urlMain + common + "3289667031&sort=popularity-rank&ie=UTF8", 'listMovies', "")
+        addDir(translation(30018), urlMain + common + "3289668031&sort=popularity-rank&ie=UTF8", 'listMovies', "")
+        addDir(translation(30019), urlMain + common + "3289669031&sort=popularity-rank&ie=UTF8", 'listMovies', "")
+        addDir(translation(30020), urlMain + common + "3289670031&sort=popularity-rank&ie=UTF8", 'listMovies', "")
+        addDir(translation(30021), urlMain + common + "3289671031&sort=popularity-rank&ie=UTF8", 'listMovies', "")
+        addDir(translation(30022), urlMain + common + "3289672031&sort=popularity-rank&ie=UTF8", 'listMovies', "")
     xbmcplugin.endOfDirectory(pluginhandle)
 
 
@@ -197,26 +200,24 @@ def listOriginals():
         content = getUnicodePage(urlMain + "/b/?ie=UTF8&node=9940930011")
     elif siteVersion == "co.uk":
         content = getUnicodePage(urlMain + "/b/?ie=UTF8&node=5687760031")
-    # debug(content)
     match = re.compile('csrf":"(.+?)"', re.DOTALL).findall(content)
     if match:
         addon.setSetting('csrfToken', match[0])
     content = content[content.find('<map name="pilots'):]
     content = content[:content.find('</map>')]
-    #spl = content.split('shape="rect"')
-    thumbs = { 'maninthehighcastle': 'http://ecx.images-amazon.com/images/I/5114a5G6oQL.jpg',
-               'cocked': 'http://ecx.images-amazon.com/images/I/51ky16-xESL.jpg',
-               'maddogs': 'http://ecx.images-amazon.com/images/I/61mWRYn7U2L.jpg',
-               'thenewyorkerpresents': 'http://ecx.images-amazon.com/images/I/41Yb8SUjMzL.jpg',
-               'pointofhonor': 'http://ecx.images-amazon.com/images/I/51OBmT5ARUL.jpg',
-               'downdog': 'http://ecx.images-amazon.com/images/I/51N2zkhOxGL.jpg',
-               'salemrogers': 'http://ecx.images-amazon.com/images/I/510nXRWkoaL.jpg',
-               'table58': 'http://ecx.images-amazon.com/images/I/51AIPgzNiWL.jpg',
-               'buddytechdetective': 'http://ecx.images-amazon.com/images/I/513pbjgDLYL.jpg',
-               'sarasolvesit': 'http://ecx.images-amazon.com/images/I/51Y5G5RbLUL.jpg',
-               'stinkyanddirty': 'http://ecx.images-amazon.com/images/I/51WzytCUmdL.jpg',
-               'niko': 'http://ecx.images-amazon.com/images/I/51XjJrg9JLL.jpg',
-               'justaddmagic': 'http://ecx.images-amazon.com/images/I/5159YFd0hQL.jpg'}
+    thumbs = {'maninthehighcastle': 'http://ecx.images-amazon.com/images/I/5114a5G6oQL.jpg',
+              'cocked': 'http://ecx.images-amazon.com/images/I/51ky16-xESL.jpg',
+              'maddogs': 'http://ecx.images-amazon.com/images/I/61mWRYn7U2L.jpg',
+              'thenewyorkerpresents': 'http://ecx.images-amazon.com/images/I/41Yb8SUjMzL.jpg',
+              'pointofhonor': 'http://ecx.images-amazon.com/images/I/51OBmT5ARUL.jpg',
+              'downdog': 'http://ecx.images-amazon.com/images/I/51N2zkhOxGL.jpg',
+              'salemrogers': 'http://ecx.images-amazon.com/images/I/510nXRWkoaL.jpg',
+              'table58': 'http://ecx.images-amazon.com/images/I/51AIPgzNiWL.jpg',
+              'buddytechdetective': 'http://ecx.images-amazon.com/images/I/513pbjgDLYL.jpg',
+              'sarasolvesit': 'http://ecx.images-amazon.com/images/I/51Y5G5RbLUL.jpg',
+              'stinkyanddirty': 'http://ecx.images-amazon.com/images/I/51WzytCUmdL.jpg',
+              'niko': 'http://ecx.images-amazon.com/images/I/51XjJrg9JLL.jpg',
+              'justaddmagic': 'http://ecx.images-amazon.com/images/I/5159YFd0hQL.jpg'}
     pilotsmatch = re.compile('<area.+?alt="(.+?)".+?href="(.+?)"', re.DOTALL).findall(content)
     for pilotval in pilotsmatch:
         match = re.compile("/gp/product/(.+?)/", re.DOTALL).findall(pilotval[1])
@@ -378,9 +379,9 @@ def listMovies(url):
             if match2:
                 year = match2[0].strip()
             dlParams.append({'type': 'movie',
-                            'id': videoID,
-                            'title': cleanTitleTMDB(cleanSeasonTitle(title)),
-                            'year': year})
+                             'id': videoID,
+                             'title': cleanTitleTMDB(cleanSeasonTitle(title)),
+                             'year': year})
             match = re.compile('src="(.+?)"', re.DOTALL).findall(entry)
             thumbUrl = videoimage.ImageFile(match[0])
             match = re.compile('data-action="s-watchlist-add".+?class="a-button a-button-small(.+?)"', re.DOTALL).findall(entry)
@@ -442,8 +443,8 @@ def listShows(url):
                 year = match2[0].strip()
             dlParams.append({'type': 'tv',
                              'id': videoID,
-                              'title': cleanTitleTMDB(cleanSeasonTitle(title)),
-                              'year': year})
+                             'title': cleanTitleTMDB(cleanSeasonTitle(title)),
+                             'year': year})
             match = re.compile('src="(.+?)"', re.DOTALL).findall(entry)
             thumbUrl = match[0].replace(".jpg", "")
             thumbUrl = thumbUrl[:thumbUrl.rfind(".")] + ".jpg"
@@ -495,11 +496,13 @@ def listSimilarMovies(videoID):
         xbmc.executebuiltin('XBMC.RunScript(' + downloadScript + ', ' + urllib.quote_plus(dlParams.encode("utf8")) + ')')
     xbmcplugin.endOfDirectory(pluginhandle)
 
+
 def prettyprint(string):
     log(json.dumps(string,
                    sort_keys=True,
                    indent=4,
                    separators=(',', ': ')))
+
 
 def listSimilarShows(videoID):
     xbmcplugin.setContent(pluginhandle, "tvshows")
@@ -676,7 +679,7 @@ def playVideo(videoID, selectQuality=False, playTrailer=False):
                   "deviceBitrateAdaptationsOverride": "CVBR,CBR",
                   "audioTrackId": "all",
                   "titleDecorationScheme": "primary-content"}
-        asincontent = getUnicodePage('https://'+apiMain+'.amazon.com/cdp/catalog/GetPlaybackResources?' + urllib.urlencode(params))
+        asincontent = getUnicodePage('https://' + apiMain + '.amazon.com/cdp/catalog/GetPlaybackResources?' + urllib.urlencode(params))
 
         asininfo = json.loads(asincontent)
         mpdURL = asininfo['audioVideoUrls']['avCdnUrlSets'][0]['avUrlInfoList'][0]['url']
@@ -699,7 +702,7 @@ def playVideo(videoID, selectQuality=False, playTrailer=False):
                   "token": token,
                   "deviceDrmOverride": "CENC",
                   "deviceStreamingTechnologyOverride": "DASH"}
-        licURL = 'https://'+apiMain+'.amazon.com/cdp/catalog/GetPlaybackResources?' + urllib.urlencode(params)
+        licURL = 'https://' + apiMain + '.amazon.com/cdp/catalog/GetPlaybackResources?' + urllib.urlencode(params)
         listitem = xbmcgui.ListItem(path=mpdURL)
         listitem.setProperty('inputstream.mpd.license_type', 'com.widevine.alpha')
         listitem.setProperty('inputstream.mpd.license_key', licURL)
@@ -756,6 +759,7 @@ def showInfo(videoID):
 def deleteCookies():
     if os.path.exists(cookieFile):
         os.remove(cookieFile)
+
 
 def getUnicodePage(url):
     print url
