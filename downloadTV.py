@@ -1,15 +1,13 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 import os
-import re
 import base64
 import xbmc
 import json
 import xbmcaddon
 import urllib
 import urllib2
-import shutil
-from operator import itemgetter
+import sys
 
 
 def download(jsonParams):
@@ -18,19 +16,16 @@ def download(jsonParams):
         videoID = item['id'].encode('utf-8')
         title = item['title'].encode('utf-8')
         year = item['year'].encode('utf-8')
-        filename = (''.join(c for c in unicode(videoID, 'utf-8') if c not in '/\\:?"*|<>')).strip()+".jpg"
-        filenameNone = (''.join(c for c in unicode(videoID, 'utf-8') if c not in '/\\:?"*|<>')).strip()+".none"
+        filename = (''.join(c for c in unicode(videoID, 'utf-8') if c not in '/\\:?"*|<>')).strip() + ".jpg"
+        filenameNone = (''.join(c for c in unicode(videoID, 'utf-8') if c not in '/\\:?"*|<>')).strip() + ".none"
         fanartFile = os.path.join(cacheFolderFanartTMDB, filename)
-        fanartFileNone = os.path.join(cacheFolderFanartTMDB, filenameNone)
         coverFile = os.path.join(cacheFolderCoversTMDB, filename)
         coverFileNone = os.path.join(cacheFolderCoversTMDB, filenameNone)
         if not os.path.exists(coverFile) and not os.path.exists(coverFileNone):
-            content = opener.open("http://api.themoviedb.org/3/search/"+videoType+"?api_key="+data+"&query="+urllib.quote_plus(title.strip())+"&year="+urllib.quote_plus(year)+"&language=en").read()
+            content = opener.open("http://api.themoviedb.org/3/search/" + videoType + "?api_key=" + data + "&query=" + urllib.quote_plus(title.strip()) + "&year=" + urllib.quote_plus(year) + "&language=en").read()
             content = json.loads(content)
-            #content = sorted(content['results'], key=itemgetter('popularity'), reverse=True)
             try:
-                #coverUrl = "http://d3gtl9l2a4fn1j.cloudfront.net/t/p/original"+content[0]['poster_path']
-                coverUrl = "http://d3gtl9l2a4fn1j.cloudfront.net/t/p/original"+content['results'][0]['poster_path']
+                coverUrl = "http://d3gtl9l2a4fn1j.cloudfront.net/t/p/original" + content['results'][0]['poster_path']
                 contentJPG = opener.open(coverUrl).read()
                 fh = open(coverFile, 'wb')
                 fh.write(contentJPG)
@@ -40,8 +35,7 @@ def download(jsonParams):
                 fh.write("")
                 fh.close()
             try:
-                #fanartUrl = "http://d3gtl9l2a4fn1j.cloudfront.net/t/p/original"+content[0]['backdrop_path']
-                fanartUrl = "http://d3gtl9l2a4fn1j.cloudfront.net/t/p/original"+content['results'][0]['backdrop_path']
+                fanartUrl = "http://d3gtl9l2a4fn1j.cloudfront.net/t/p/original" + content['results'][0]['backdrop_path']
                 contentJPG = opener.open(fanartUrl).read()
                 fh = open(fanartFile, 'wb')
                 fh.write(contentJPG)
@@ -52,7 +46,7 @@ def download(jsonParams):
 addonID = 'plugin.video.prime_instant'
 addon = xbmcaddon.Addon(id=addonID)
 data = base64.b64decode("NDE1MDk1NjI4MWNkZTczMWJhZDRkZTMxNTUwNzU4MWI=")
-addonUserDataFolder = xbmc.translatePath("special://profile/addon_data/"+addonID)
+addonUserDataFolder = xbmc.translatePath("special://profile/addon_data/" + addonID)
 cacheFolder = os.path.join(addonUserDataFolder, "cache")
 cacheFolderCoversTMDB = os.path.join(cacheFolder, "covers")
 cacheFolderFanartTMDB = os.path.join(cacheFolder, "fanart")
