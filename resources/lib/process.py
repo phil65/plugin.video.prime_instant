@@ -777,32 +777,6 @@ def getUnicodePage(url):
         return unicode(req.read(), "utf-8")
 
 
-def getAsciiPage(url):
-    req = opener.open(url)
-    content = req.read()
-    if "content-type" in req.headers and "charset=" in req.headers['content-type']:
-        encoding = req.headers['content-type'].split('charset=')[-1]
-        content = unicode(content, encoding)
-    else:
-        content = unicode(content, "utf-8")
-    return content.encode("utf-8")
-
-
-def cipherKey(s, key="xlordkx"):
-    key = unicode(key).encode("utf-8")
-    keyarr = map(ord, key)
-    key = b""
-    for i in range(len(keyarr)):
-        key += str(keyarr[i])
-    s = base64.b64decode(s)
-    random.seed(long(key))
-    bytearr = map(ord, s)
-    o = b""
-    for i in range(len(bytearr)):
-        o += (chr(bytearr[i] ^ random.randint(0, 255)))
-    return unicode(o)
-
-
 def search(mediatype):
     keyboard = xbmc.Keyboard('', translation(30015))
     keyboard.doModal()
