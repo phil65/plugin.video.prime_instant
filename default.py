@@ -189,6 +189,7 @@ def listDecadesMovie():
         addDir(translation(30020), urlMain + common + "3289670031&sort=popularity-rank&ie=UTF8", 'listMovies', "")
         addDir(translation(30021), urlMain + common + "3289671031&sort=popularity-rank&ie=UTF8", 'listMovies', "")
         addDir(translation(30022), urlMain + common + "3289672031&sort=popularity-rank&ie=UTF8", 'listMovies', "")
+    xbmcplugin.setContent(pluginhandle, "years")
     xbmcplugin.endOfDirectory(pluginhandle)
 
 
@@ -637,9 +638,16 @@ def listGenres(url, videoType):
     match = re.compile('href="(.+?)">.+?>(.+?)</span>.+?>(.+?)<', re.DOTALL).findall(content)
     for url, title, nr in match:
         if videoType == "movie":
-            addDir(cleanTitle(title), urlMain + url.replace("/s/", "/mn/search/ajax/").replace("&amp;", "&"), 'listMovies', "")
+            addDir(cleanTitle(title),
+                   urlMain + url.replace("/s/", "/mn/search/ajax/").replace("&amp;", "&"),
+                   'listMovies',
+                   "")
         else:
-            addDir(cleanTitle(title), urlMain + url.replace("/s/", "/mn/search/ajax/").replace("&amp;", "&"), 'listShows', "")
+            addDir(cleanTitle(title),
+                   urlMain + url.replace("/s/", "/mn/search/ajax/").replace("&amp;", "&"),
+                   'listShows',
+                   "")
+    xbmcplugin.setContent(pluginhandle, "genres")
     xbmcplugin.endOfDirectory(pluginhandle)
 
 
@@ -827,7 +835,7 @@ def search(mediatype):
 def addToQueue(videoID, videoType):
     if videoType == "tv":
         videoType = "tv_episode"
-    content = getUnicodePage(urlMain + "/gp/video/watchlist/ajax/addRemove.html/ref=sr_1_1_watchlist_add?token=" + urllib.quote_plus(addon.getSetting('csrfToken').encode("utf8")) + "&dataType=json&prodType=" + videoType + "&ASIN=" + videoID + "&pageType=Search&subPageType=SASLeafSingleSearch&store=instant-video")
+    getUnicodePage(urlMain + "/gp/video/watchlist/ajax/addRemove.html/ref=sr_1_1_watchlist_add?token=" + urllib.quote_plus(addon.getSetting('csrfToken').encode("utf8")) + "&dataType=json&prodType=" + videoType + "&ASIN=" + videoID + "&pageType=Search&subPageType=SASLeafSingleSearch&store=instant-video")
     if showNotification:
         xbmc.executebuiltin(unicode('XBMC.Notification(Info:,' + translation(30088) + ',3000,' + icon + ')').encode("utf-8"))
 
@@ -835,14 +843,14 @@ def addToQueue(videoID, videoType):
 def removeFromQueue(videoID, videoType):
     if videoType == "tv":
         videoType = "tv_episode"
-    content = getUnicodePage(urlMain + "/gp/video/watchlist/ajax/addRemove.html/ref=sr_1_1_watchlist_remove?token=" + urllib.quote_plus(addon.getSetting('csrfToken').encode("utf8")) + "&dataType=json&prodType=" + videoType + "&ASIN=" + videoID + "&pageType=Search&subPageType=SASLeafSingleSearch&store=instant-video")
+    getUnicodePage(urlMain + "/gp/video/watchlist/ajax/addRemove.html/ref=sr_1_1_watchlist_remove?token=" + urllib.quote_plus(addon.getSetting('csrfToken').encode("utf8")) + "&dataType=json&prodType=" + videoType + "&ASIN=" + videoID + "&pageType=Search&subPageType=SASLeafSingleSearch&store=instant-video")
     xbmc.executebuiltin("Container.Refresh")
     if showNotification:
         xbmc.executebuiltin(unicode('XBMC.Notification(Info:,' + translation(30089) + ',3000,' + icon + ')').encode("utf-8"))
 
 
 def login(content=None, statusOnly=False):
-    if content is None:
+    if not content:
         content = getUnicodePage(urlMainS)
     signoutmatch = re.compile("declare\('config.signOutText',(.+?)\);", re.DOTALL).findall(content)
     if '","isPrime":1' in content:
@@ -916,52 +924,6 @@ def cleanTitleTMDB(title):
     if " OmU" in title:
         title = title[:title.find(" OmU")]
     return title
-
-
-def addMovieToLibrary(movieID, title):
-    movieFolderName = (''.join(c for c in title if c not in '/\\:?"*|<>')).strip(' .')
-    directory = os.path.join(libraryFolderMovies, movieFolderName)
-    if not os.path.exists(directory):
-        xbmcvfs.mkdir(unicode(directory).encode("iso-8859-1"))
-        fh = xbmcvfs.File(unicode(os.path.join(directory, "movie.strm")).encode("iso-8859-1"), 'w')
-        fh.write(unicode('plugin://' + addonID + '/?mode=playVideo&url=' + movieID).encode("utf-8"))
-        fh.close()
-    if updateDB:
-        xbmc.executebuiltin(unicode('UpdateLibrary(video)').encode("utf-8"))
-
-
-def addSeasonToLibrary(seriesID, seriesTitle, seasonID):
-    seriesFolderName = (''.join(c for c in seriesTitle if c not in '/\\:?"*|<>')).strip(' .')
-    seriesDir = os.path.join(libraryFolderTV, seriesFolderName)
-    if not os.path.isdir(seriesDir):
-        xbmcvfs.mkdir(unicode(seriesDir).encode("iso-8859-1"))
-    content = getUnicodePage(urlMain + "/gp/product/" + seasonID)
-    matchSeason = re.compile('"seasonNumber":"(.+?)"', re.DOTALL).findall(content)
-    spl = content.split('href="' + urlMain + '/gp/product')
-    for entry in spl:
-        match = re.compile('class="episode-title">(.+?)<', re.DOTALL).findall(entry)
-        if match:
-            title = match[0]
-            title = cleanTitle(title)
-            episodeNr = title[:title.find('.')]
-            title = title[title.find('.') + 1:].strip()
-            match = re.compile('/(.+?)/', re.DOTALL).findall(entry)
-            episodeID = match[0]
-            if len(episodeNr) > 2:
-                episodeNr = ''.join(re.findall(r'\d+', episodeNr))
-            if len(episodeNr) == 1:
-                episodeNr = "0" + episodeNr
-            seasonNr = matchSeason[0]
-            if len(seasonNr) == 1:
-                seasonNr = "0" + seasonNr
-            filename = "S" + seasonNr + "E" + episodeNr + " - " + title + ".strm"
-            filename = (''.join(c for c in filename if c not in '/\\:?"*|<>')).strip(' .')
-            print type(filename)
-            fh = xbmcvfs.File(unicode(os.path.join(seriesDir, filename)).encode('utf-8'), 'w')
-            fh.write(unicode('plugin://' + addonID + '/?mode=playVideo&url=' + episodeID).encode("utf-8"))
-            fh.close()
-    if updateDB:
-        xbmc.executebuiltin('UpdateLibrary(video)')
 
 
 def log(msg, level=xbmc.LOGNOTICE):
@@ -1085,7 +1047,6 @@ def addLink(name, url, mode, iconimage, videoType="", desc="", duration="", year
         titleTemp = name.strip()
         if year:
             titleTemp += ' (' + year + ')'
-        entries.append((translation(30055), 'RunPlugin(plugin://' + addonID + '/?mode=addMovieToLibrary&url=' + urllib.quote_plus(url.encode("utf8")) + '&name=' + urllib.quote_plus(titleTemp.encode("utf8")) + ')',))
     entries.append((translation(30057), 'Container.Update(plugin://' + addonID + '/?mode=listSimilarMovies&url=' + urllib.quote_plus(url.encode("utf8")) + ')',))
     entries.append((translation(30058), 'Container.Update(plugin://' + addonID + '/?mode=listSimilarShows&url=' + urllib.quote_plus(url.encode("utf8")) + ')',))
     liz.addContextMenuItems(entries)
@@ -1119,7 +1080,6 @@ def addLinkR(name, url, mode, iconimage, videoType="", desc="", duration="", yea
         titleTemp = name.strip()
         if year:
             titleTemp += ' (' + year + ')'
-        entries.append((translation(30055), 'RunPlugin(plugin://' + addonID + '/?mode=addMovieToLibrary&url=' + urllib.quote_plus(url.encode("utf8")) + '&name=' + urllib.quote_plus(titleTemp.encode("utf8")) + ')',))
     entries.append((translation(30057), 'Container.Update(plugin://' + addonID + '/?mode=listSimilarMovies&url=' + urllib.quote_plus(url.encode("utf8")) + ')',))
     entries.append((translation(30058), 'Container.Update(plugin://' + addonID + '/?mode=listSimilarShows&url=' + urllib.quote_plus(url.encode("utf8")) + ')',))
     liz.addContextMenuItems(entries)
@@ -1136,7 +1096,6 @@ def addSeasonDir(name, url, mode, iconimage, seriesName, seriesID):
     liz.setInfo(type="video", infoLabels={"title": name, "TVShowTitle": seriesName, "mediatype": "season"})
     liz.setArt({"poster": iconimage})
     entries = []
-    entries.append((translation(30056), 'RunPlugin(plugin://' + addonID + '/?mode=addSeasonToLibrary&url=' + urllib.quote_plus(url.encode("utf8")) + '&seriesID=' + urllib.quote_plus(seriesID.encode("utf8")) + '&name=' + urllib.quote_plus(seriesName.strip().encode("utf8")) + ')',))
     liz.addContextMenuItems(entries)
     ok = xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]), url=u, listitem=liz, isFolder=True)
     return ok
@@ -1237,9 +1196,5 @@ elif mode == 'listSimilarShows':
     listSimilarShows(url)
 elif mode == 'showInfo':
     showInfo(url)
-elif mode == 'addMovieToLibrary':
-    addMovieToLibrary(url, name)
-elif mode == 'addSeasonToLibrary':
-    addSeasonToLibrary(seriesID, name, url)
 else:
     index()
