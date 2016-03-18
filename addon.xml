@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<addon id="plugin.video.prime_instant" name="Amazon Prime Instant Video" version="1.1.7" provider-name="XLordKX">
+<addon id="plugin.video.prime_instant" name="Amazon Prime Instant Video" version="1.2.0" provider-name="XLordKX|phil65">
     <requires>
-        <import addon="xbmc.python" version="2.1.0"/>
+        <import addon="xbmc.python" version="2.25.0"/>
         <import addon="script.module.mechanize" version="0.2.6"/>
     </requires>
     <extension point="xbmc.python.pluginsource" library="default.py">
@@ -9,13 +9,13 @@
     </extension>
     <extension point="xbmc.addon.metadata">
         <platform>all</platform>
-        <summary lang="en">Amazon Prime Instant Video Add-on (DE/UK)</summary>
+        <summary lang="en">Amazon Prime Instant Video Add-on (DE/UK/JP)</summary>
         <language></language>
-        <description lang="en">Amazon Prime Instant Video Add-on (DE/UK)</description>
+        <description lang="en">Amazon Prime Instant Video Add-on (DE/UK/JP)</description>
         <disclaimer lang="en">Some parts of this addon may not be legal in your country of residence - please check with your local laws before installing.</disclaimer>
         <license>GNU GENERAL PUBLIC LICENSE. Version 2, June 1991</license>
-        <source>https://github.com/XLordKX/kodi</source>
-        <forum>http://www.kodinerds.net</forum>
-        <website>http://www.amazon.com</website>
+        <source>https://github.com/phil65/plugin.video.prime_instant</source>
+        <forum></forum>
+        <website></website>
     </extension>
 </addon>
