@@ -1,42 +1,33 @@
 from __future__ import unicode_literals
 import urllib
 import urlparse
-import urllib2
 import hashlib
 import socket
 import mechanize
-import cookielib
 import sys
 import re
 import os
 import json
-import random
-import base64
 import xbmc
 import xbmcplugin
 import xbmcgui
 import xbmcaddon
-from HTMLParser import HTMLParser
 import ScrapeUtils
+from utils import *
 
 addon = xbmcaddon.Addon()
 addonID = addon.getAddonInfo('id')
 addonFolder = downloadScript = xbmc.translatePath('special://home/addons/' + addonID).decode('utf-8')
 addonUserDataFolder = xbmc.translatePath("special://profile/addon_data/" + addonID).decode('utf-8')
-
 icon = os.path.join(addonFolder, "icon.png")  # .encode('utf-8')
-
-
-def translation(string_id):
-    return addon.getLocalizedString(string_id)  # .encode('utf-8')
+userAgent = "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/47.0.2526.111 Safari/537.36"
+socket.setdefaulttimeout(30)
 
 if not os.path.exists(os.path.join(addonUserDataFolder, "settings.xml")):
     xbmc.executebuiltin(unicode('XBMC.Notification(Info:,' + translation(30081) + ',10000,' + icon + ')').encode("utf-8"))
     addon.openSettings()
 
-socket.setdefaulttimeout(30)
 pluginhandle = int(sys.argv[1])
-cj = cookielib.MozillaCookieJar()
 downloadScript = os.path.join(addonFolder, "download.py").encode('utf-8')
 downloadScriptTV = os.path.join(addonFolder, "downloadTV.py").encode('utf-8')
 cacheFolder = os.path.join(addonUserDataFolder, "cache")
@@ -78,10 +69,6 @@ addon.setSetting('password', '')
 cookieFile = os.path.join(addonUserDataFolder, siteVersion + ".cookies")
 
 NODEBUG = False  # True
-
-opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(cj))
-userAgent = "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/47.0.2526.111 Safari/537.36"
-opener.addheaders = [('User-agent', userAgent)]
 
 
 def index():
@@ -496,13 +483,6 @@ def listSimilarMovies(videoID):
     xbmcplugin.endOfDirectory(pluginhandle)
 
 
-def prettyprint(string):
-    log(json.dumps(string,
-                   sort_keys=True,
-                   indent=4,
-                   separators=(',', ': ')))
-
-
 def listSimilarShows(videoID):
     xbmcplugin.setContent(pluginhandle, "tvshows")
     content = getUnicodePage(urlMain + "/gp/product/" + videoID)
@@ -767,16 +747,6 @@ def deleteCookies():
         os.remove(cookieFile)
 
 
-def getUnicodePage(url):
-    print url
-    req = opener.open(url)
-    if "content-type" in req.headers and "charset=" in req.headers['content-type']:
-        encoding = req.headers['content-type'].split('charset=')[-1]
-        return unicode(req.read(), encoding)
-    else:
-        return unicode(req.read(), "utf-8")
-
-
 def search(mediatype):
     keyboard = xbmc.Keyboard('', translation(30015))
     keyboard.doModal()
@@ -829,89 +799,38 @@ def login(content=None, statusOnly=False):
         return "prime"
     elif signoutmatch[0].strip() != "null":
         return "noprime"
-    else:
-        if statusOnly:
-            return "none"
-
-        deleteCookies()
-        content = ""
-        keyboard = xbmc.Keyboard('', translation(30090))
+    elif statusOnly:
+        return "none"
+    deleteCookies()
+    content = ""
+    keyboard = xbmc.Keyboard('', translation(30090))
+    keyboard.doModal()
+    if keyboard.isConfirmed() and unicode(keyboard.getText(), "utf-8"):
+        email = unicode(keyboard.getText(), "utf-8")
+        keyboard = xbmc.Keyboard('', translation(30091), True)
+        keyboard.setHiddenInput(True)
         keyboard.doModal()
         if keyboard.isConfirmed() and unicode(keyboard.getText(), "utf-8"):
-            email = unicode(keyboard.getText(), "utf-8")
-            keyboard = xbmc.Keyboard('', translation(30091), True)
-            keyboard.setHiddenInput(True)
-            keyboard.doModal()
-            if keyboard.isConfirmed() and unicode(keyboard.getText(), "utf-8"):
-                password = unicode(keyboard.getText(), "utf-8")
-                br = mechanize.Browser()
-                br.set_cookiejar(cj)
-                br.set_handle_robots(False)
-                br.addheaders = [('User-agent', userAgent)]
-                content = br.open(urlMainS + "/gp/sign-in.html")
-                br.select_form(name="signIn")
-                br["email"] = email
-                br["password"] = password
-                content = br.submit().read()
-                cj.save(cookieFile)
-                cj.load(cookieFile)
-                content = getUnicodePage(urlMainS)
-        signoutmatch = re.compile("declare\('config.signOutText',(.+?)\);", re.DOTALL).findall(content)
-        if '","isPrime":1' in content:
-            return "prime"
-        elif signoutmatch[0].strip() != "null":
-            return "noprime"
-        else:
-            return "none"
-
-
-def cleanInput(str):
-    if type(str) is not unicode:
-        str = unicode(str, "iso-8859-15")
-        xmlc = re.compile('&#(.+?);', re.DOTALL).findall(str)
-        for c in xmlc:
-            str = str.replace("&#" + c + ";", unichr(int(c)))
-
-    p = HTMLParser()
-    return p.unescape(str)
-
-
-def cleanTitle(title):
-    if "[HD]" in title:
-        title = title[:title.find("[HD]")]
-    return cleanInput(title)
-
-
-def cleanSeasonTitle(title):
-    blacklist = [": The Complete", ": Season", "Season", "Staffel", "Volume", "Series"]
-    for item in blacklist:
-        if item in title:
-            title = title[:title.rfind(item)]
-    return title.strip(" -,")
-
-
-def cleanTitleTMDB(title):
-    if "[" in title:
-        title = title[:title.find("[")]
-    if " OmU" in title:
-        title = title[:title.find(" OmU")]
-    return title
-
-
-def log(msg, level=xbmc.LOGNOTICE):
-    # xbmc.log('%s: %s' % (addonID, msg), level)
-    log_message = u'{0}: {1}'.format(addonID, msg)
-    xbmc.log(log_message.encode("utf-8"), level)
-    """
-    xbmc.LOGDEBUG = 0
-    xbmc.LOGERROR = 4
-    xbmc.LOGFATAL = 6
-    xbmc.LOGINFO = 1
-    xbmc.LOGNONE = 7
-    xbmc.LOGNOTICE = 2
-    xbmc.LOGSEVERE = 5
-    xbmc.LOGWARNING = 3
-    """
+            password = unicode(keyboard.getText(), "utf-8")
+            br = mechanize.Browser()
+            br.set_cookiejar(cj)
+            br.set_handle_robots(False)
+            br.addheaders = [('User-agent', userAgent)]
+            content = br.open(urlMainS + "/gp/sign-in.html")
+            br.select_form(name="signIn")
+            br["email"] = email
+            br["password"] = password
+            content = br.submit().read()
+            cj.save(cookieFile)
+            cj.load(cookieFile)
+            content = getUnicodePage(urlMainS)
+    signoutmatch = re.compile("declare\('config.signOutText',(.+?)\);", re.DOTALL).findall(content)
+    if '","isPrime":1' in content:
+        return "prime"
+    elif signoutmatch[0].strip() != "null":
+        return "noprime"
+    else:
+        return "none"
 
 
 def addDir(name, url, mode, iconimage, videoType=""):
