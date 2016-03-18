@@ -26,10 +26,10 @@ def download(jsonParams):
             try:
                 fanartUrl = "http://d3gtl9l2a4fn1j.cloudfront.net/t/p/original" + content['results'][0]['backdrop_path']
                 contentJPG = opener.open(fanartUrl).read()
-                with fh as open(fanartFile, 'wb'):
+                with open(fanartFile, 'wb') as fh:
                     fh.write(contentJPG)
             except:
-                with fh as open(fanartFileNone, 'w'):
+                with open(fanartFileNone, 'w') as fh:
                     fh.write("")
 
 addonID = 'plugin.video.prime_instant'
