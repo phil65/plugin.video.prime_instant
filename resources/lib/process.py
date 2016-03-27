@@ -849,8 +849,6 @@ def addDir(name, url, mode, iconimage, videoType=""):
 
 
 def addShowDir(name, url, mode, iconimage, videoType="", desc="", duration="", year="", mpaa="", director="", genre="", rating="", showAll=False):
-    sAll = "&showAll=true" if showAll else ""
-    u = sys.argv[0] + "?url=" + urllib.quote_plus(url.encode("utf8")) + "&mode=" + str(mode) + "&thumb=" + urllib.quote_plus(iconimage.encode("utf8")) + "&name=" + urllib.quote_plus(name.encode("utf8")) + sAll
     liz = xbmcgui.ListItem(name,
                            iconImage="DefaultTVShows.png",
                            thumbnailImage=iconimage)
@@ -870,6 +868,13 @@ def addShowDir(name, url, mode, iconimage, videoType="", desc="", duration="", y
     entries.append((translation(30057), 'Container.Update(plugin://' + addonID + '/?mode=listSimilarMovies&url=' + urllib.quote_plus(url.encode("utf8")) + ')',))
     entries.append((translation(30058), 'Container.Update(plugin://' + addonID + '/?mode=listSimilarShows&url=' + urllib.quote_plus(url.encode("utf8")) + ')',))
     liz.addContextMenuItems(entries)
+    params = {"url": url.encode("utf8"),
+              "mode": mode,
+              "name": name.encode("utf8"),
+              "showAll": "true" if showAll else None,
+              "thumb": iconImage.encode("utf8")}
+    params = {k: v for k, v in params.items() if v}
+    u = sys.argv[0] + "?" + urllib.urlencode(params)
     ok = xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]), url=u, listitem=liz, isFolder=True)
     return ok
 
@@ -902,7 +907,6 @@ def addShowDirR(name, url, mode, iconimage, videoType="", desc="", duration="", 
 
 
 def addLink(name, url, mode, iconimage, videoType="", desc="", duration="", year="", mpaa="", director="", genre="", rating=""):
-    u = sys.argv[0] + "?url=" + urllib.quote_plus(url.encode("utf8")) + "&mode=" + str(mode) + "&name=" + urllib.quote_plus(name.encode("utf8")) + "&thumb=" + urllib.quote_plus(iconimage.encode("utf8"))
     liz = xbmcgui.ListItem(name,
                            iconImage="DefaultTVShows.png",
                            thumbnailImage=iconimage)
@@ -931,12 +935,16 @@ def addLink(name, url, mode, iconimage, videoType="", desc="", duration="", year
     entries.append((translation(30058), 'Container.Update(plugin://' + addonID + '/?mode=listSimilarShows&url=' + urllib.quote_plus(url.encode("utf8")) + ')',))
     liz.addContextMenuItems(entries)
     liz.setProperty('IsPlayable', 'true')
+    params = {"url": url.encode("utf8"),
+              "mode": mode,
+              "name": name.encode("utf8"),
+              "thumb": iconimage.encode("utf8")}
+    u = sys.argv[0] + "?" + urllib.urlencode(params)
     ok = xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]), url=u, listitem=liz)
     return ok
 
 
 def addLinkR(name, url, mode, iconimage, videoType="", desc="", duration="", year="", mpaa="", director="", genre="", rating=""):
-    u = sys.argv[0] + "?url=" + urllib.quote_plus(url.encode("utf8")) + "&mode=" + str(mode) + "&name=" + urllib.quote_plus(name.encode("utf8")) + "&thumb=" + urllib.quote_plus(iconimage.encode("utf8"))
     liz = xbmcgui.ListItem(name,
                            iconImage="DefaultTVShows.png",
                            thumbnailImage=iconimage)
@@ -964,6 +972,11 @@ def addLinkR(name, url, mode, iconimage, videoType="", desc="", duration="", yea
     entries.append((translation(30058), 'Container.Update(plugin://' + addonID + '/?mode=listSimilarShows&url=' + urllib.quote_plus(url.encode("utf8")) + ')',))
     liz.addContextMenuItems(entries)
     liz.setProperty('IsPlayable', 'true')
+    params = {"url": url.encode("utf8"),
+              "mode": mode,
+              "name": name.encode("utf8"),
+              "thumb": iconimage.encode("utf8")}
+    u = sys.argv[0] + "?" + urllib.urlencode(params)
     ok = xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]), url=u, listitem=liz)
     return ok
 
@@ -1028,7 +1041,6 @@ def run(params):
 
     if os.path.exists(os.path.join(addonUserDataFolder, "cookies")):
         os.rename(os.path.join(addonUserDataFolder, "cookies"), cookieFile)
-
 
     if os.path.exists(cookieFile):
         cj.load(cookieFile)
